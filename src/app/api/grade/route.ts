@@ -12,8 +12,13 @@ type GradeInput = {
   studentAnswerText: string;
 };
 
-function fallbackGradeItems(items: GradeInput[]) {
-  const perQuestion = items.map((item) => {
+type GradeResponse = {
+  perQuestion: GradeResult[];
+  overallFeedback: string;
+};
+
+function fallbackGradeItems(items: GradeInput[]): GradeResponse {
+  const perQuestion: GradeResult[] = items.map((item) => {
     const maxMarks = item.maxMarks > 0 ? item.maxMarks : 10;
     const answer = (item.studentAnswerText || "").trim();
     if (!answer) {
@@ -33,7 +38,12 @@ function fallbackGradeItems(items: GradeInput[]) {
         .split(/\s+/)
         .filter((word) => word.length > 3)
     );
-    const answerWords = (answer.toLowerCase().replace(/[^a-z0-9\s]/g, " ").match(/\S+/g) || [])
+    const answerWords = (
+      answer
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, " ")
+        .match(/\S+/g) || []
+    )
       .filter((word) => word.length > 2)
       .map((word) => word.trim());
 
@@ -45,7 +55,13 @@ function fallbackGradeItems(items: GradeInput[]) {
       Math.min(maxMarks, Number((similarity * maxMarks).toFixed(1)))
     );
 
-    const verdict = marksAwarded >= maxMarks * 0.8 ? "correct" : marksAwarded >= maxMarks * 0.45 ? "partial" : "incorrect";
+    const verdict: GradeResult["verdict"] =
+      marksAwarded >= maxMarks * 0.8
+        ? "correct"
+        : marksAwarded >= maxMarks * 0.45
+          ? "partial"
+          : "incorrect";
+
     const feedback =
       verdict === "correct"
         ? "This response is clear and addresses the main idea of the question."
@@ -72,8 +88,6 @@ function fallbackGradeItems(items: GradeInput[]) {
         : "The student needs more support in understanding the core concepts and describing them clearly.";
 
   return {
-    totalAwarded,
-    totalMax,
     overallFeedback,
     perQuestion,
   };
