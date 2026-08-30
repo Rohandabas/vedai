@@ -28,7 +28,7 @@ export function HighlightOverlay({ box, label }: { box: BBox; label: string }) {
         width: `${w}%`,
         height: `${h}%`,
         borderColor: "var(--green)",
-        background: "var(--green-soft)",
+        background: "rgba(47, 168, 79, 0.08)",
         opacity: shown ? 0.95 : 0,
         transform: shown ? "scale(1)" : "scale(0.97)",
         transition: "opacity 260ms ease, transform 260ms ease",
